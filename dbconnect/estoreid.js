@@ -4,6 +4,7 @@ const estoreid = [
   {
     estore: estoreid1,
     database: process.env.RESELLER_DATABASE1,
+    extension: process.env.RESELLER_DATABASE2,
   },
 ];
 

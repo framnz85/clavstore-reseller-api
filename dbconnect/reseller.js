@@ -9,7 +9,9 @@ estoreid.forEach((id) => {
       conn[id.estore[i]] = mongoose.createConnection(
         `${id.database}/estore-${id.estore[i]}`
       );
-      console.log(`DB CONNECTED TO ${id.database}/estore-${id.estore[i]}`);
+      console.log(
+        `DB CONNECTED TO ${id.database}/estore-${id.estore[i]}${id.extension}`
+      );
     } catch (err) {
       console.log(`DB CONNECTION ERR ${err}`);
     }
