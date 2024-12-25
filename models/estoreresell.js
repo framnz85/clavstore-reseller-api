@@ -189,6 +189,7 @@ const estoreSchema = new mongoose.Schema(
       enum: ["Approved", "For Approval", "Pending"],
     },
     upEndDate: Date,
+    upEndDate2: Date,
     raffleActivation: Boolean,
     raffleTitle: String,
     rafflePrize: String,

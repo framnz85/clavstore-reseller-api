@@ -23,12 +23,12 @@ const billingSchema = new mongoose.Schema(
       default: "Unpaid",
     },
     payDeadline: Date,
-    approval: {
+    billStatus: {
       type: String,
-      enum: ["For Approval", "Pending", "Approved"],
-      default: "For Approval",
+      enum: ["Not Billed", "Pending", "Billed"],
+      default: "Not Billed",
     },
-    appDeadline: Date,
+    billDeadline: Date,
     referenceNum: String,
     datePaid: Date,
   },

@@ -65,10 +65,12 @@ exports.populateEstoreResell = async (estoreid, estores) => {
 exports.populateBilling = async (billings, estoreid) => {
   let packids = [];
   let payids = [];
+  let estoreids = [];
 
   billings = billings.map((bill) => {
     packids.push(bill.package);
     payids.push(bill.bank);
+    estoreids.push(bill.estoreid);
     return bill;
   });
 
@@ -84,6 +86,12 @@ exports.populateBilling = async (billings, estoreid) => {
     })
     .exec();
 
+  const estoreList = await EstoreResell(estoreid)
+    .find({
+      _id: { $in: estoreids },
+    })
+    .exec();
+
   billings = billings.map((bill) => {
     return {
       ...(bill._doc ? bill._doc : bill),
@@ -96,6 +104,12 @@ exports.populateBilling = async (billings, estoreid) => {
       bank: paymentList.find(
         (pay) =>
           bill.bank && pay._id && pay._id.toString() === bill.bank.toString()
+      ),
+      estoreid: estoreList.find(
+        (store) =>
+          bill.bank &&
+          store._id &&
+          store._id.toString() === bill.estoreid.toString()
       ),
     };
   });

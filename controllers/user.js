@@ -220,10 +220,13 @@ exports.getResellerUsers = async (req, res) => {
 
 exports.updateCustomer = async (req, res) => {
   const estoreid = req.headers.estoreid;
+  const resellid = req.headers.resellid;
   const userid = req.params.userid;
 
+  console.log(resellid);
+
   try {
-    await User.findOneAndUpdate(
+    await UserResell(resellid).findOneAndUpdate(
       { _id: new ObjectId(userid), estoreid: new ObjectId(estoreid) },
       req.body,
       {
@@ -233,16 +236,17 @@ exports.updateCustomer = async (req, res) => {
 
     res.json({ ok: true });
   } catch (error) {
-    res.json({ err: "Creating new user fails. " + error.message });
+    res.json({ err: "Updating user fails. " + error.message });
   }
 };
 
 exports.resetPassword = async (req, res) => {
   const estoreid = req.headers.estoreid;
+  const resellid = req.headers.resellid;
   const userid = req.params.userid;
 
   try {
-    const user = await User.findOneAndUpdate(
+    const user = await UserResell(resellid).findOneAndUpdate(
       {
         _id: new ObjectId(userid),
         estoreid: new ObjectId(estoreid),

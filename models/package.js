@@ -23,6 +23,7 @@ const packageSchema = new mongoose.Schema(
     hostingFee: Number,
     setupCommission: Number,
     hostingCommission: Number,
+    groupChatLink: String,
     default: Boolean,
   },
   { timestamps: true }
