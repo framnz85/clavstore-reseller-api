@@ -231,6 +231,7 @@ const estoreSchema = new mongoose.Schema(
       annual3: Number,
       affComm3: Number,
       domain: String,
+      subdomain: String,
       allowGuide: { type: Boolean, default: true },
       trainTitle: String,
       allowTraining: Boolean,
