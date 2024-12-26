@@ -161,6 +161,7 @@ const estoreSchema = new mongoose.Schema(
       },
     ],
     upgradeType: String,
+    upPackage: ObjectId,
     upStatus: {
       type: String,
       enum: ["Active", "Pending"],
@@ -170,6 +171,7 @@ const estoreSchema = new mongoose.Schema(
       type: String,
       enum: ["Approved", "For Approval", "Pending"],
     },
+    upPackage2: ObjectId,
     upStatus2: {
       type: String,
       enum: ["Active", "Pending"],

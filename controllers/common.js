@@ -1,42 +1,17 @@
-const User = require("../models/user");
 const Package = require("../models/package");
 const Payment = require("../models/payment");
 const UserResell = require("../models/userresell");
 const EstoreResell = require("../models/estoreresell");
 
-exports.populateEstore = async (estores) => {
-  let estoreids = [];
-
-  estores = estores.map((estore) => {
-    estoreids.push(estore._id);
-    return estore;
-  });
-
-  const ownerList = await User.find({
-    estoreid: { $in: estoreids },
-    role: "admin",
-  }).exec();
-
-  estores = estores.map((estore) => {
-    return {
-      ...(estore._doc ? estore._doc : estore),
-      owner: ownerList.find(
-        (owner) =>
-          estore._id &&
-          owner.estoreid &&
-          owner.estoreid.toString() === estore._id.toString()
-      ),
-    };
-  });
-
-  return estores;
-};
-
 exports.populateEstoreResell = async (estoreid, estores) => {
   let estoreids = [];
+  let packids = [];
+  let packids2 = [];
 
   estores = estores.map((estore) => {
     estoreids.push(estore._id);
+    packids.push(estore.upPackage);
+    packids2.push(estore.upPackage2);
     return estore;
   });
 
@@ -44,6 +19,18 @@ exports.populateEstoreResell = async (estoreid, estores) => {
     .find({
       estoreid: { $in: estoreids },
       role: "admin",
+    })
+    .exec();
+
+  const packageList = await Package(estoreid)
+    .find({
+      _id: { $in: packids },
+    })
+    .exec();
+
+  const packageList2 = await Package(estoreid)
+    .find({
+      _id: { $in: packids2 },
     })
     .exec();
 
@@ -55,6 +42,18 @@ exports.populateEstoreResell = async (estoreid, estores) => {
           estore._id &&
           owner.estoreid &&
           owner.estoreid.toString() === estore._id.toString()
+      ),
+      upPackage: packageList.find(
+        (pack) =>
+          estore.upPackage &&
+          pack._id &&
+          pack._id.toString() === estore.upPackage.toString()
+      ),
+      upPackage2: packageList2.find(
+        (pack) =>
+          estore.upPackage &&
+          pack._id &&
+          pack._id.toString() === estore.upPackage.toString()
       ),
     };
   });
