@@ -25,6 +25,14 @@ const packageSchema = new mongoose.Schema(
     hostingCommission: Number,
     groupChatLink: String,
     default: Boolean,
+    allowGuide: { type: Boolean, default: true },
+    trainTitle: String,
+    training: [
+      {
+        title: String,
+        lessons: Array,
+      },
+    ],
   },
   { timestamps: true }
 );
