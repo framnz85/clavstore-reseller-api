@@ -4,18 +4,6 @@ const Estore = require("../models/estoreresell");
 
 const { populateBilling } = require("./common");
 
-exports.getBillings = async (req, res) => {
-  const estoreid = req.headers.estoreid;
-
-  try {
-    let billings = await Billing(estoreid).find().sort({ deadline: -1 });
-    billings = await populateBilling(billings, estoreid);
-    res.json(billings);
-  } catch (error) {
-    res.json({ err: "Getting billings fails. " + error.message });
-  }
-};
-
 exports.getBillingsByEstore = async (req, res) => {
   const estoreid = req.headers.estoreid;
   const estoreid2 = req.params.estoreid;
@@ -25,7 +13,30 @@ exports.getBillingsByEstore = async (req, res) => {
       .find({ estoreid: new ObjectId(estoreid2) })
       .sort({ deadline: 1 });
     billings = await populateBilling(billings, estoreid);
-    res.json(billings);
+    res.json({ billings });
+  } catch (error) {
+    res.json({ err: "Getting billings fails. " + error.message });
+  }
+};
+
+exports.getBillings = async (req, res) => {
+  const estoreid = req.headers.estoreid;
+
+  try {
+    const { sortkey, sort, currentPage, pageSize } = req.body;
+
+    let billings = await Billing(estoreid)
+      .find()
+      .skip((currentPage - 1) * pageSize)
+      .sort({ [sortkey]: sort })
+      .limit(pageSize)
+      .exec();
+
+    billings = await populateBilling(billings, estoreid);
+
+    const countBillings = await Billing(estoreid).countDocuments().exec();
+
+    res.json({ billings, count: countBillings });
   } catch (error) {
     res.json({ err: "Getting billings fails. " + error.message });
   }
