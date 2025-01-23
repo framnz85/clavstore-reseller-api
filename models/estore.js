@@ -388,6 +388,8 @@ const estoreSchema = new mongoose.Schema(
       enum: ["percent", "number"],
       default: "percent",
     },
+    domain: String,
+    subdomain: String,
   },
   { timestamps: true }
 );
