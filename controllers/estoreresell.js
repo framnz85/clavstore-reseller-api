@@ -6,6 +6,22 @@ const EstoreResell = require("../models/estoreresell");
 
 const { populateEstoreResell } = require("./common");
 
+exports.getEstore = async (req, res) => {
+  const estoreid = req.headers.estoreid;
+
+  try {
+    const estore = await EstoreResell(estoreid)
+      .findOne({
+        _id: new ObjectId(estoreid),
+      })
+      .exec();
+
+    res.json(estore.reseller);
+  } catch (error) {
+    res.json({ err: "Fetching store fails. " + error.message });
+  }
+};
+
 exports.getEstores = async (req, res) => {
   const estoreid = req.headers.estoreid;
   try {
@@ -144,7 +160,7 @@ exports.getEstoresBilling = async (req, res) => {
 
     res.json({ estores, count: countEstores.length });
   } catch (error) {
-    res.json({ err: "Fetching store counters fails. " + error.message });
+    res.json({ err: "Fetching store billing fails. " + error.message });
   }
 };
 

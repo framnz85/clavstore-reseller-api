@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
+  getEstore,
   getEstores,
   getEstoresBilling,
   updateEstore,
@@ -9,6 +10,7 @@ const {
 } = require("../controllers/estoreresell");
 const { authCheck, adminGratisCheck } = require("../middlewares/auth");
 
+router.get("/gratis/estore", authCheck, adminGratisCheck, getEstore);
 router.post("/gratis/estores", authCheck, adminGratisCheck, getEstores);
 router.post(
   "/gratis/estores-billing",
