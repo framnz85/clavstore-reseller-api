@@ -3,6 +3,7 @@ const SibApiV3Sdk = require("sib-api-v3-sdk");
 const slugify = require("slugify");
 
 const EstoreResell = require("../models/estoreresell");
+const UserResell = require("../models/userresell");
 
 const { populateEstoreResell } = require("./common");
 
@@ -266,5 +267,25 @@ exports.updateEstoreReseller = async (req, res) => {
     res.json(estore);
   } catch (error) {
     res.json({ err: "Fetching store information fails. " + error.message });
+  }
+};
+
+exports.updateAffiliate = async (req, res) => {
+  const estoreid = req.headers.estoreid;
+  const refid = req.params.refid;
+  let values = req.body;
+
+  try {
+    const user = await UserResell(estoreid)
+      .findOne({ _id: new ObjectId(refid) })
+      .exec();
+    await EstoreResell(estoreid)
+      .findByIdAndUpdate(user.estoreid, values, {
+        new: true,
+      })
+      .exec();
+    res.json({ ok: true });
+  } catch (error) {
+    res.json({ err: "Updating affiliate fails. " + error.message });
   }
 };

@@ -7,6 +7,7 @@ const {
   updateEstore,
   approveCosmic,
   updateEstoreReseller,
+  updateAffiliate,
 } = require("../controllers/estoreresell");
 const { authCheck, adminGratisCheck } = require("../middlewares/auth");
 
@@ -30,6 +31,12 @@ router.put(
   authCheck,
   adminGratisCheck,
   updateEstoreReseller
+);
+router.put(
+  "/gratis/update-affiliate/:refid",
+  authCheck,
+  adminGratisCheck,
+  updateAffiliate
 );
 
 module.exports = router;
