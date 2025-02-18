@@ -46,7 +46,7 @@ exports.getAllAffiliates = async (req, res) => {
     const countAffiliates = await Withdraw(resellid).estimatedDocumentCount({});
     res.json({ affiliates, countAffiliates });
   } catch (error) {
-    res.json({ err: "Saving withdrawal fails. " + error.message });
+    res.json({ err: "Getting affiliates failed. " + error.message });
   }
 };
 
@@ -66,6 +66,23 @@ exports.getAllWithdrawals = async (req, res) => {
     );
     res.json({ withdrawal, countWithdrawals });
   } catch (error) {
-    res.json({ err: "Saving withdrawal fails. " + error.message });
+    res.json({ err: "Getting all withdrawals failed. " + error.message });
+  }
+};
+
+exports.approveWithdraw = async (req, res) => {
+  const withid = req.body.withid;
+  const resellid = req.headers.resellid;
+  try {
+    await Withdraw(resellid).findOneAndUpdate(
+      { _id: new ObjectId(withid) },
+      { status: "Approved" },
+      {
+        new: true,
+      }
+    );
+    res.json({ ok: true });
+  } catch (error) {
+    res.json({ err: "Approving withdrawal fails. " + error.message });
   }
 };
