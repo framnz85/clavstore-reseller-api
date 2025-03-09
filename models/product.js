@@ -121,6 +121,7 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    prod_code: ObjectId,
     waiting: Object,
     vatExempt: Number,
     vatExemptType: {
