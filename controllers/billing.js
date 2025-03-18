@@ -19,6 +19,29 @@ exports.getBillingsByEstore = async (req, res) => {
   }
 };
 
+exports.getNotRemitted = async (req, res) => {
+  const estoreid = req.headers.estoreid;
+
+  try {
+    let billings = await Billing(estoreid)
+      .find({ status: "Paid", billStatus: "Not Billed" })
+      .sort({ billDeadline: 1 })
+      .select("_id package packageDesc totalAmount billDeadline");
+
+    billings = await populateBilling(billings, estoreid);
+
+    res.json(
+      billings.map((bill) => {
+        const packageType = bill.package.defaultPackage;
+        delete bill.package;
+        return { ...bill, packageType };
+      })
+    );
+  } catch (error) {
+    res.json({ err: "Getting not remitted fails. " + error.message });
+  }
+};
+
 exports.getBillings = async (req, res) => {
   const estoreid = req.headers.estoreid;
 
