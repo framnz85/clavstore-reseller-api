@@ -5,14 +5,16 @@ const Estore = require("../models/estore");
 const User = require("../models/user");
 const UserResell = require("../models/userresell");
 
-const { populateUsers } = require("./common");
+const {
+  populateUsers,
+  populateWishlist,
+  populateAddress,
+} = require("./common");
 
 exports.getUserDetails = async (req, res) => {
   const email = req.user.email;
   const estoreid = req.headers.estoreid;
   const resellid = req.params.resellid;
-  let wishlist = [];
-  let addiv3 = {};
 
   try {
     const user = await User.findOne({
@@ -29,19 +31,7 @@ exports.getUserDetails = async (req, res) => {
       .select("-password -showPass -verifyCode")
       .exec();
     if (user) {
-      if (user.wishlist && user.wishlist.length > 0) {
-        wishlist = await populateWishlist(user.wishlist, estoreid);
-      }
-      if (user.address && user.address.addiv3 && user.address.addiv3._id) {
-        addiv3 = await populateAddress(user.address.addiv3, estoreid);
-        res.json({
-          ...user._doc,
-          wishlist,
-          address: { ...user.address, addiv3 },
-        });
-      } else {
-        res.json({ ...user._doc, wishlist });
-      }
+      res.json(user);
     } else {
       let userWithReseller = await User.findOne({
         email,
@@ -72,29 +62,7 @@ exports.getUserDetails = async (req, res) => {
       }
 
       if (userWithReseller) {
-        if (userWithReseller.wishlist && userWithReseller.wishlist.length > 0) {
-          wishlist = await populateWishlist(
-            userWithReseller.wishlist,
-            estoreid
-          );
-        }
-        if (
-          userWithReseller.address &&
-          userWithReseller.address.addiv3 &&
-          userWithReseller.address.addiv3._id
-        ) {
-          addiv3 = await populateAddress(
-            userWithReseller.address.addiv3,
-            estoreid
-          );
-          res.json({
-            ...userWithReseller._doc,
-            wishlist,
-            address: { ...userWithReseller.address, addiv3 },
-          });
-        } else {
-          res.json({ ...userWithReseller._doc, wishlist });
-        }
+        res.json(userWithReseller);
       } else {
         const userWithEmail = await User.findOne({
           email,
@@ -109,26 +77,7 @@ exports.getUserDetails = async (req, res) => {
           .select("-password -showPass -verifyCode")
           .exec();
         if (userWithEmail) {
-          if (userWithEmail.wishlist && userWithEmail.wishlist.length > 0) {
-            wishlist = await populateWishlist(userWithEmail.wishlist, estoreid);
-          }
-          if (
-            userWithEmail.address &&
-            userWithEmail.address.addiv3 &&
-            userWithEmail.address.addiv3._id
-          ) {
-            addiv3 = await populateAddress(
-              userWithEmail.address.addiv3,
-              estoreid
-            );
-            res.json({
-              ...userWithEmail._doc,
-              wishlist,
-              address: { ...userWithEmail.address, addiv3 },
-            });
-          } else {
-            res.json({ ...userWithEmail._doc, wishlist });
-          }
+          res.json(userWithEmail);
         } else {
           res.json({
             err: "The email doesn't exist in this store.",
@@ -137,6 +86,7 @@ exports.getUserDetails = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error.message);
     res.json({ err: "Fetching user information fails. " + error.message });
   }
 };
