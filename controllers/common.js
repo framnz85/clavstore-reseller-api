@@ -114,7 +114,7 @@ exports.populateBilling = async (billings, estoreid) => {
       ),
       estoreid: estoreList.find(
         (store) =>
-          bill.bank &&
+          bill.estoreid &&
           store._id &&
           store._id.toString() === bill.estoreid.toString()
       ),
