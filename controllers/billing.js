@@ -25,6 +25,10 @@ exports.getNotRemitted = async (req, res) => {
   try {
     let billings = await Billing(estoreid)
       .find({ status: "Paid", billStatus: "Not Billed" })
+      .populate({
+        path: "estoreid",
+        match: { upgradeType: "1" },
+      })
       .sort({ billDeadline: 1 })
       .select("_id package packageDesc totalAmount billDeadline");
 
