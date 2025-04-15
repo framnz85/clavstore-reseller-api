@@ -31,19 +31,11 @@ exports.getNotRemitted = async (req, res) => {
     billings = await populateBilling(billings, estoreid);
 
     res.json(
-      billings
-        .filter(
-          (bill) =>
-            bill &&
-            bill.estoreid &&
-            bill.estoreid.upgradeType &&
-            bill.estoreid.upgradeType === "1"
-        )
-        .map((bill) => {
-          const packageType = bill.package.defaultPackage;
-          delete bill.package;
-          return { ...bill, packageType };
-        })
+      billings.map((bill) => {
+        const packageType = bill.package.defaultPackage;
+        delete bill.package;
+        return { ...bill, packageType };
+      })
     );
   } catch (error) {
     res.json({ err: "Getting not remitted fails. " + error.message });
