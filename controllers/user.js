@@ -123,7 +123,7 @@ exports.getResellerUsers = async (req, res) => {
 
     let countOwners = {};
 
-    if (owners.length === 0 && searchQuery) {
+    if (owners.length < 10 && searchQuery) {
       owners = await UserResell(resellid)
         .find(
           masterUser

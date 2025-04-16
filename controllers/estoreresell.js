@@ -57,7 +57,7 @@ exports.getEstores = async (req, res) => {
 
     let countEstores = {};
 
-    if (estores.length === 0 && searchQuery) {
+    if (estores.length < 10 && searchQuery) {
       estores = await EstoreResell(estoreid)
         .find(
           masterUser
