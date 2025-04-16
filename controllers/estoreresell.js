@@ -26,8 +26,15 @@ exports.getEstore = async (req, res) => {
 exports.getEstores = async (req, res) => {
   const estoreid = req.headers.estoreid;
   try {
-    const { sortkey, sort, currentPage, pageSize, searchQuery, masterUser } =
-      req.body;
+    const {
+      sortkey,
+      sort,
+      currentPage,
+      pageSize,
+      searchQuery,
+      masterUser,
+      upgradeType,
+    } = req.body;
 
     let searchObj = searchQuery
       ? masterUser
@@ -35,11 +42,11 @@ exports.getEstores = async (req, res) => {
         : {
             $text: { $search: searchQuery },
             resellid: new ObjectId(estoreid),
-            upgradeType: "1",
+            upgradeType,
           }
       : masterUser
       ? {}
-      : { resellid: new ObjectId(estoreid), upgradeType: "1" };
+      : { resellid: new ObjectId(estoreid), upgradeType };
 
     let estores = await EstoreResell(estoreid)
       .find(searchObj)
@@ -60,7 +67,7 @@ exports.getEstores = async (req, res) => {
             : {
                 email: searchQuery,
                 resellid: new ObjectId(estoreid),
-                upgradeType: "1",
+                upgradeType,
               }
         )
         .skip((currentPage - 1) * pageSize)
@@ -76,7 +83,7 @@ exports.getEstores = async (req, res) => {
             : {
                 email: searchQuery,
                 resellid: new ObjectId(estoreid),
-                upgradeType: "1",
+                upgradeType,
               }
         )
         .exec();
@@ -92,7 +99,7 @@ exports.getEstores = async (req, res) => {
             : {
                 _id: new ObjectId(searchQuery),
                 resellid: new ObjectId(estoreid),
-                upgradeType: "1",
+                upgradeType,
               }
         )
         .skip((currentPage - 1) * pageSize)
@@ -108,7 +115,7 @@ exports.getEstores = async (req, res) => {
             : {
                 _id: new ObjectId(searchQuery),
                 resellid: new ObjectId(estoreid),
-                upgradeType: "1",
+                upgradeType,
               }
         )
         .exec();
