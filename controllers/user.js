@@ -98,6 +98,11 @@ exports.getResellerUsers = async (req, res) => {
     const { sortkey, sort, currentPage, pageSize, searchQuery, masterUser } =
       req.body;
 
+    let ownersResult = [];
+    let owners = [];
+    let countResult = 0;
+    let countOwners = 0;
+
     let searchObj = searchQuery
       ? masterUser
         ? {
@@ -113,7 +118,7 @@ exports.getResellerUsers = async (req, res) => {
       ? { role: "admin" }
       : { role: "admin", resellid: new ObjectId(resellid) };
 
-    let owners = await UserResell(resellid)
+    ownersResult = await UserResell(resellid)
       .find(searchObj)
       .populate("estoreid")
       .skip((currentPage - 1) * pageSize)
@@ -121,10 +126,10 @@ exports.getResellerUsers = async (req, res) => {
       .limit(pageSize)
       .exec();
 
-    let countOwners = {};
+    owners = [...owners, ...ownersResult];
 
-    if (owners.length < 10 && searchQuery) {
-      owners = await UserResell(resellid)
+    if (owners.length < 3 && searchQuery) {
+      ownersResult = await UserResell(resellid)
         .find(
           masterUser
             ? {
@@ -142,7 +147,10 @@ exports.getResellerUsers = async (req, res) => {
         .sort({ [sortkey]: sort })
         .limit(pageSize)
         .exec();
-      countOwners = await UserResell(resellid)
+
+      owners = [...owners, ...ownersResult];
+
+      countResult = await UserResell(resellid)
         .countDocuments(
           masterUser
             ? {
@@ -156,8 +164,11 @@ exports.getResellerUsers = async (req, res) => {
               }
         )
         .exec();
+      countOwners = countOwners + countResult;
     } else {
-      countOwners = await UserResell(resellid).countDocuments(searchObj).exec();
+      countResult = await UserResell(resellid).countDocuments(searchObj).exec();
+
+      countOwners = countOwners + countResult;
     }
 
     owners = await populateUsers(owners, resellid);

@@ -36,29 +36,34 @@ exports.getEstores = async (req, res) => {
       upgradeType,
     } = req.body;
 
+    let estoreResult = [];
+    let estores = [];
+    let countResult = 0;
+    let countEstores = 0;
+
     let searchObj = searchQuery
       ? masterUser
-        ? { $text: { $search: searchQuery } }
+        ? { $text: { $search: searchQuery }, upgradeType }
         : {
             $text: { $search: searchQuery },
             resellid: new ObjectId(estoreid),
             upgradeType,
           }
       : masterUser
-      ? {}
+      ? { upgradeType }
       : { resellid: new ObjectId(estoreid), upgradeType };
 
-    let estores = await EstoreResell(estoreid)
+    estoreResult = await EstoreResell(estoreid)
       .find(searchObj)
       .skip((currentPage - 1) * pageSize)
       .sort({ [sortkey]: sort })
       .limit(pageSize)
       .exec();
 
-    let countEstores = {};
+    estores = [...estores, ...estoreResult];
 
-    if (estores.length < 10 && searchQuery) {
-      estores = await EstoreResell(estoreid)
+    if (estores.length < 3 && searchQuery) {
+      estoreResult = await EstoreResell(estoreid)
         .find(
           masterUser
             ? {
@@ -74,7 +79,10 @@ exports.getEstores = async (req, res) => {
         .sort({ [sortkey]: sort })
         .limit(pageSize)
         .exec();
-      countEstores = await EstoreResell(estoreid)
+
+      estores = [...estores, ...estoreResult];
+
+      countResult = await EstoreResell(estoreid)
         .countDocuments(
           masterUser
             ? {
@@ -87,10 +95,11 @@ exports.getEstores = async (req, res) => {
               }
         )
         .exec();
+      countEstores = countEstores + countResult;
     }
 
-    if (estores.length === 0 && searchQuery && new ObjectId(searchQuery)) {
-      estores = await EstoreResell(estoreid)
+    if (estores.length < 3 && searchQuery && ObjectId.isValid(searchQuery)) {
+      estoreResult = await EstoreResell(estoreid)
         .find(
           masterUser
             ? {
@@ -106,7 +115,10 @@ exports.getEstores = async (req, res) => {
         .sort({ [sortkey]: sort })
         .limit(pageSize)
         .exec();
-      countEstores = await EstoreResell(estoreid)
+
+      estores = [...estores, ...estoreResult];
+
+      countResult = await EstoreResell(estoreid)
         .countDocuments(
           masterUser
             ? {
@@ -119,10 +131,12 @@ exports.getEstores = async (req, res) => {
               }
         )
         .exec();
+      countEstores = countEstores + countResult;
     } else {
-      countEstores = await EstoreResell(estoreid)
+      countResult = await EstoreResell(estoreid)
         .countDocuments(searchObj)
         .exec();
+      countEstores = countEstores + countResult;
     }
 
     estores = await populateEstoreResell(estoreid, estores);
