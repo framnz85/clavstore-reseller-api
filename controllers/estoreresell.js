@@ -226,39 +226,41 @@ exports.approveCosmic = async (req, res) => {
       }
     );
     if (estore) {
-      const email = req.body.email;
-      const name = req.body.name;
-      const defaultClient = SibApiV3Sdk.ApiClient.instance;
+      if (estore.upStatus === "Active") {
+        const email = req.body.email;
+        const name = req.body.name;
+        const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
-      let apiKey = defaultClient.authentications["api-key"];
-      apiKey.apiKey = process.env.BREVO_APIKEY;
+        let apiKey = defaultClient.authentications["api-key"];
+        apiKey.apiKey = process.env.BREVO_APIKEY;
 
-      let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+        let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
-      let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
+        let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
 
-      sendSmtpEmail = {
-        to: [
-          {
-            email,
-            name,
+        sendSmtpEmail = {
+          to: [
+            {
+              email,
+              name,
+            },
+          ],
+          templateId: 208,
+          headers: {
+            "X-Mailin-custom":
+              "custom_header_1:custom_value_1|custom_header_2:custom_value_2",
           },
-        ],
-        templateId: 208,
-        headers: {
-          "X-Mailin-custom":
-            "custom_header_1:custom_value_1|custom_header_2:custom_value_2",
-        },
-      };
+        };
 
-      apiInstance.sendTransacEmail(sendSmtpEmail).then(
-        function (data) {
-          //
-        },
-        function (error) {
-          res.json({ err: "Sending welcome email fails. " + error.message });
-        }
-      );
+        apiInstance.sendTransacEmail(sendSmtpEmail).then(
+          function (data) {
+            //
+          },
+          function (error) {
+            res.json({ err: "Sending welcome email fails. " + error.message });
+          }
+        );
+      }
 
       res.json({ ok: true });
     } else {
