@@ -38,7 +38,10 @@ const packageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-packageSchema.index({ name: "text" });
+packageSchema.index(
+  { name: "text", description: "text" },
+  { weights: { name: 5, description: 2 } }
+);
 
 const Package = (estoreid) =>
   conn[estoreid].model("GratisPackage", packageSchema);

@@ -103,20 +103,18 @@ exports.getResellerUsers = async (req, res) => {
     let countResult = 0;
     let countOwners = 0;
 
-    let searchObj = searchQuery
-      ? masterUser
-        ? {
-            $text: { $search: searchQuery },
-            role: "admin",
-          }
-        : {
-            $text: { $search: searchQuery },
-            role: "admin",
-            resellid: new ObjectId(resellid),
-          }
-      : masterUser
+    const searchObj = masterUser
       ? { role: "admin" }
-      : { role: "admin", resellid: new ObjectId(resellid) };
+      : { resellid: new ObjectId(resellid), role: "admin" };
+
+    if (searchQuery) {
+      searchObj.$or = [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { email: { $regex: searchQuery, $options: "i" } },
+        { phone: { $regex: searchQuery, $options: "i" } },
+        { address: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
 
     ownersResult = await UserResell(resellid)
       .find(searchObj)
@@ -128,52 +126,11 @@ exports.getResellerUsers = async (req, res) => {
 
     owners = [...owners, ...ownersResult];
 
-    if (owners.length < 3 && searchQuery) {
-      ownersResult = await UserResell(resellid)
-        .find(
-          masterUser
-            ? {
-                email: searchQuery,
-                role: "admin",
-              }
-            : {
-                email: searchQuery,
-                role: "admin",
-                resellid: new ObjectId(resellid),
-              }
-        )
-        .populate("estoreid")
-        .skip((currentPage - 1) * pageSize)
-        .sort({ [sortkey]: sort })
-        .limit(pageSize)
-        .exec();
-
-      owners = [...owners, ...ownersResult];
-
-      countResult = await UserResell(resellid)
-        .countDocuments(
-          masterUser
-            ? {
-                email: searchQuery,
-                role: "admin",
-              }
-            : {
-                email: searchQuery,
-                role: "admin",
-                resellid: new ObjectId(resellid),
-              }
-        )
-        .exec();
-      countOwners = countOwners + countResult;
-    } else {
-      countResult = await UserResell(resellid).countDocuments(searchObj).exec();
-
-      countOwners = countOwners + countResult;
-    }
+    countResult = await UserResell(resellid).countDocuments(searchObj).exec();
 
     owners = await populateUsers(owners, resellid);
 
-    res.json({ owners, count: countOwners });
+    res.json({ owners, count: countResult });
   } catch (error) {
     res.json({ err: "Fetching users fails. " + error.message });
   }

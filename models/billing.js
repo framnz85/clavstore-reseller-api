@@ -41,7 +41,22 @@ const billingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-billingSchema.index({ name: "text" });
+billingSchema.index(
+  {
+    packageDesc: "text",
+    billType: "text",
+    status: "text",
+    billStatus: "text",
+  },
+  {
+    weights: {
+      packageDesc: 5,
+      billType: 2,
+      status: 2,
+      billStatus: 2,
+    },
+  }
+);
 
 const Billing = (estoreid) =>
   conn[estoreid].model("GratisBilling", billingSchema);

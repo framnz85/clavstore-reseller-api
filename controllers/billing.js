@@ -46,10 +46,10 @@ exports.getBillings = async (req, res) => {
   const estoreid = req.headers.estoreid;
 
   try {
-    const { sortkey, sort, currentPage, pageSize } = req.body;
+    const { sortkey, sort, currentPage, pageSize, status } = req.body;
 
     let billings = await Billing(estoreid)
-      .find()
+      .find(status === "all" ? {} : { status })
       .skip((currentPage - 1) * pageSize)
       .sort({ [sortkey]: sort })
       .limit(pageSize)

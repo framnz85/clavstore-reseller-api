@@ -86,7 +86,22 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.index({ name: "text" });
+userSchema.index(
+  {
+    name: "text",
+    email: "text",
+    phone: "text",
+    address: "text",
+  },
+  {
+    weights: {
+      name: 5,
+      email: 3,
+      phone: 2,
+      address: 1,
+    },
+  }
+);
 
 const UserResell = (estoreid) => conn[estoreid].model("GratisUser", userSchema);
 

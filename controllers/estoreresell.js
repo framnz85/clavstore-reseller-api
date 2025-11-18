@@ -41,17 +41,20 @@ exports.getEstores = async (req, res) => {
     let countResult = 0;
     let countEstores = 0;
 
-    let searchObj = searchQuery
-      ? masterUser
-        ? { $text: { $search: searchQuery }, upgradeType }
-        : {
-            $text: { $search: searchQuery },
-            resellid: new ObjectId(estoreid),
-            upgradeType,
-          }
-      : masterUser
+    const searchObj = masterUser
       ? { upgradeType }
       : { resellid: new ObjectId(estoreid), upgradeType };
+
+    if (searchQuery) {
+      searchObj.$or = [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { slug: { $regex: searchQuery, $options: "i" } },
+        { email: { $regex: searchQuery, $options: "i" } },
+        { storeDescription: { $regex: searchQuery, $options: "i" } },
+        { storeAddress: { $regex: searchQuery, $options: "i" } },
+        { storeContact: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
 
     estoreResult = await EstoreResell(estoreid)
       .find(searchObj)
@@ -61,42 +64,6 @@ exports.getEstores = async (req, res) => {
       .exec();
 
     estores = [...estores, ...estoreResult];
-
-    if (estores.length < 3 && searchQuery) {
-      estoreResult = await EstoreResell(estoreid)
-        .find(
-          masterUser
-            ? {
-                email: searchQuery,
-              }
-            : {
-                email: searchQuery,
-                resellid: new ObjectId(estoreid),
-                upgradeType,
-              }
-        )
-        .skip((currentPage - 1) * pageSize)
-        .sort({ [sortkey]: sort })
-        .limit(pageSize)
-        .exec();
-
-      estores = [...estores, ...estoreResult];
-
-      countResult = await EstoreResell(estoreid)
-        .countDocuments(
-          masterUser
-            ? {
-                email: searchQuery,
-              }
-            : {
-                email: searchQuery,
-                resellid: new ObjectId(estoreid),
-                upgradeType,
-              }
-        )
-        .exec();
-      countEstores = countEstores + countResult;
-    }
 
     if (estores.length < 3 && searchQuery && ObjectId.isValid(searchQuery)) {
       estoreResult = await EstoreResell(estoreid)
