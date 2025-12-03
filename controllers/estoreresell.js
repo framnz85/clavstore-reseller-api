@@ -224,7 +224,7 @@ exports.approveCosmic = async (req, res) => {
             //
           },
           function (error) {
-            res.json({ err: "Sending welcome email fails. " + error.message });
+            //
           }
         );
       }
