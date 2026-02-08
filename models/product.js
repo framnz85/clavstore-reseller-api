@@ -5,6 +5,8 @@ const Estore = require("../models/estore");
 
 const productSchema = new mongoose.Schema(
   {
+    customid: String,
+    lanerack: String,
     estoreid: {
       type: ObjectId,
       ref: Estore,
@@ -123,6 +125,7 @@ const productSchema = new mongoose.Schema(
     },
     prod_code: ObjectId,
     waiting: Object,
+    vatPercent: { type: Number, default: 12 },
     vatExempt: Number,
     vatExemptType: {
       type: String,
@@ -136,7 +139,7 @@ const productSchema = new mongoose.Schema(
       default: "percent",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productSchema.index(
@@ -147,7 +150,7 @@ productSchema.index(
       description: 3,
       slug: 1,
     },
-  }
+  },
 );
 
 const Product = (estoreid) =>

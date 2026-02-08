@@ -90,6 +90,10 @@ const estoreSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    jobsChange: {
+      type: Number,
+      default: 0,
+    },
     invites: {
       type: Number,
       default: 0,
@@ -100,6 +104,9 @@ const estoreSchema = new mongoose.Schema(
     },
     storeDescription: String,
     storeAddress: String,
+    supplier: String,
+    billTo: String,
+    shipTo: String,
     storeContact: String,
     locationType: {
       type: String,
@@ -157,7 +164,7 @@ const estoreSchema = new mongoose.Schema(
     },
     scannerType: {
       type: String,
-      enum: ["webcam", "barScan"],
+      enum: ["webcam1", "webcam2", "barScan"],
     },
     billingHistory: [
       {
@@ -268,6 +275,8 @@ const estoreSchema = new mongoose.Schema(
           "cancelorders",
           "deleteorders",
           "createvoid",
+          "purchaseorder",
+          "joborder",
           "category",
           "brand",
           "payment",
@@ -295,6 +304,8 @@ const estoreSchema = new mongoose.Schema(
           "cancelorders",
           "deleteorders",
           "createvoid",
+          "purchaseorder",
+          "joborder",
           "category",
           "brand",
           "payment",
@@ -372,6 +383,7 @@ const estoreSchema = new mongoose.Schema(
       showReceivedBy: Boolean,
       customeNote: String,
     },
+    vatPercent: { type: Number, default: 12 },
     vatExempt: Number,
     vatExemptType: {
       type: String,
@@ -387,7 +399,7 @@ const estoreSchema = new mongoose.Schema(
     domain: String,
     subdomain: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 estoreSchema.index(
@@ -408,7 +420,7 @@ estoreSchema.index(
       storeAddress: 1,
       storeContact: 1,
     },
-  }
+  },
 );
 
 const Estore = conn.model("GratisEstore", estoreSchema);
