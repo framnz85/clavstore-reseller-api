@@ -27,6 +27,10 @@ const estoreSchema = new mongoose.Schema(
       default: "active",
       enum: ["pending", "pause", "stop", "active"],
     },
+    enableCashflow: {
+      type: Boolean,
+      default: false,
+    },
     country: {
       type: ObjectId,
       ref: Country,
@@ -280,6 +284,7 @@ const estoreSchema = new mongoose.Schema(
           "category",
           "brand",
           "payment",
+          "cashflow",
           "location",
           "product",
           "products",
@@ -309,6 +314,7 @@ const estoreSchema = new mongoose.Schema(
           "category",
           "brand",
           "payment",
+          "cashflow",
           "location",
           "product",
           "products",

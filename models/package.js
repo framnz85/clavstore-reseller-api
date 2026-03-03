@@ -14,6 +14,7 @@ const packageSchema = new mongoose.Schema(
     },
     regularPrice: Number,
     promoPrice: Number,
+    promoEnds: Date,
     installmentPrice: Number,
     downPayment: Number,
     installTerm1: Number,
@@ -35,12 +36,12 @@ const packageSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 packageSchema.index(
   { name: "text", description: "text" },
-  { weights: { name: 5, description: 2 } }
+  { weights: { name: 5, description: 2 } },
 );
 
 const Package = (estoreid) =>
