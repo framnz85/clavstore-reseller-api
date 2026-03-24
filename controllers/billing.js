@@ -35,7 +35,7 @@ exports.getNotRemitted = async (req, res) => {
         const packageType = bill.package.defaultPackage;
         delete bill.package;
         return { ...bill, packageType };
-      })
+      }),
     );
   } catch (error) {
     res.json({ err: "Getting not remitted fails. " + error.message });
@@ -113,7 +113,7 @@ exports.updateBilling = async (req, res) => {
         estoreid: new ObjectId(estoreid),
       },
       req.body,
-      { new: true }
+      { new: true },
     );
     if (billing) {
       res.json(billing);
@@ -122,5 +122,28 @@ exports.updateBilling = async (req, res) => {
     }
   } catch (error) {
     res.json({ err: "Fetching billing information fails. " + error.message });
+  }
+};
+
+exports.deleteBilling = async (req, res) => {
+  const billid = req.params.billid;
+  const estoreid = req.headers.estoreid;
+  const resellid = req.headers.resellid;
+
+  try {
+    const billing = await Billing(resellid).findOneAndDelete({
+      _id: Object(billid),
+      estoreid: new ObjectId(estoreid),
+    });
+    if (billing) {
+      res.json({
+        success: true,
+        message: "Billing record deleted successfully.",
+      });
+    } else {
+      res.json({ err: "No billing exist under ID: " + billid });
+    }
+  } catch (error) {
+    res.json({ err: "Deleting billing record fails. " + error.message });
   }
 };

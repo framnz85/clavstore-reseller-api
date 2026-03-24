@@ -5,6 +5,11 @@ const Country = require("./country");
 
 const estoreSchema = new mongoose.Schema(
   {
+    storeType: {
+      type: String,
+      default: "store",
+      enum: ["store", "warehouse"],
+    },
     name: {
       type: String,
       required: true,
@@ -20,7 +25,6 @@ const estoreSchema = new mongoose.Schema(
       type: String,
       unique: true,
       lowercase: true,
-      index: true,
     },
     status: {
       type: String,
@@ -37,6 +41,11 @@ const estoreSchema = new mongoose.Schema(
       required: true,
     },
     headerColor: { type: String, default: "#009A57" },
+    theme: {
+      name: { type: String, default: "original" },
+      dateRequested: Date,
+      approved: Boolean,
+    },
     carouselColor: String,
     showRandomItems: {
       type: Boolean,
@@ -288,6 +297,7 @@ const estoreSchema = new mongoose.Schema(
           "location",
           "product",
           "products",
+          "jobs",
           "sales",
           "inventory",
           "users",
@@ -318,6 +328,7 @@ const estoreSchema = new mongoose.Schema(
           "location",
           "product",
           "products",
+          "jobs",
           "sales",
           "inventory",
           "users",
@@ -364,6 +375,15 @@ const estoreSchema = new mongoose.Schema(
         link: String,
       },
     ],
+    orderInitStat: {
+      type: String,
+      default: "Not Processed",
+      enum: ["Not Processed", "Waiting Payment", "Processing"],
+    },
+    orderInitRemarks: {
+      type: String,
+      default: "Order was created.",
+    },
     orderStatus: {
       type: String,
       default: "Delivering",
@@ -382,11 +402,25 @@ const estoreSchema = new mongoose.Schema(
         },
       ],
       showOrderedBy: Boolean,
+      showOrderStatus: Boolean,
+      showCusPhone: Boolean,
+      showCusAddress: Boolean,
+      showOrderType: Boolean,
+      showPayment: Boolean,
+      showUnitOfMeasure: Boolean,
+      showLocNumber: Boolean,
+      showExpiration: Boolean,
       showSenior: Boolean,
       showVat: Boolean,
       showCashier: Boolean,
       showDateOrdered: Boolean,
       showReceivedBy: Boolean,
+      customDetails2: [
+        {
+          description: String,
+          value: String,
+        },
+      ],
       customeNote: String,
     },
     vatPercent: { type: Number, default: 12 },
@@ -404,6 +438,8 @@ const estoreSchema = new mongoose.Schema(
     },
     domain: String,
     subdomain: String,
+    indexing: { type: Boolean, default: false },
+    branchStore: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
