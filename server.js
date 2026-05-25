@@ -9,11 +9,23 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json({ limit: "2mb" }));
 
-const allowedOrigins = ["http://localhost:3001"];
+const allowedOrigins = [
+  "https://reselify.com",
+  "https://www.reselify.com",
+  "https://learnclavstore.com",
+  "https://www.learnclavstore.com",
+  "http://localhost:3001",
+  "capacitor://localhost",
+  "ionic://localhost",
+  "http://localhost",
+];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
