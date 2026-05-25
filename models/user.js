@@ -82,8 +82,9 @@ const userSchema = new mongoose.Schema(
     deleteAccount: { request: Boolean, reasons: Array },
     wishlist: [{ type: ObjectId, ref: "Product" }],
     wholesale: { type: Boolean, default: true },
+    promoStart: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.index(
@@ -100,7 +101,7 @@ userSchema.index(
       phone: 2,
       address: 1,
     },
-  }
+  },
 );
 
 const User = conn.model("GratisUser", userSchema);
