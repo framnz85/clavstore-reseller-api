@@ -1,11 +1,15 @@
 const ObjectId = require("mongoose").Types.ObjectId;
-const SibApiV3Sdk = require("sib-api-v3-sdk");
 const slugify = require("slugify");
 
 const EstoreResell = require("../models/estoreresell");
 const UserResell = require("../models/userresell");
 
 const { populateEstoreResell } = require("./common");
+const {
+  addingSubscriber,
+  removeSubscriber,
+  updateSubscriber,
+} = require("./sender");
 
 exports.getEstore = async (req, res) => {
   const estoreid = req.headers.estoreid;
@@ -76,7 +80,7 @@ exports.getEstores = async (req, res) => {
                 _id: new ObjectId(searchQuery),
                 resellid: new ObjectId(estoreid),
                 upgradeType,
-              }
+              },
         )
         .skip((currentPage - 1) * pageSize)
         .sort({ [sortkey]: sort })
@@ -95,7 +99,7 @@ exports.getEstores = async (req, res) => {
                 _id: new ObjectId(searchQuery),
                 resellid: new ObjectId(estoreid),
                 upgradeType,
-              }
+              },
         )
         .exec();
       countEstores = countEstores + countResult;
@@ -190,45 +194,14 @@ exports.approveCosmic = async (req, res) => {
       req.body,
       {
         new: true,
-      }
+      },
     );
     if (estore) {
       if (estore.upStatus === "Active") {
-        const email = req.body.email;
-        const name = req.body.name;
-        const defaultClient = SibApiV3Sdk.ApiClient.instance;
-
-        let apiKey = defaultClient.authentications["api-key"];
-        apiKey.apiKey = process.env.BREVO_APIKEY;
-
-        let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
-        let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
-
-        sendSmtpEmail = {
-          to: [
-            {
-              email,
-              name,
-            },
-          ],
-          templateId: 208,
-          headers: {
-            "X-Mailin-custom":
-              "custom_header_1:custom_value_1|custom_header_2:custom_value_2",
-          },
-        };
-
-        apiInstance.sendTransacEmail(sendSmtpEmail).then(
-          function (data) {
-            //
-          },
-          function (error) {
-            //
-          }
-        );
+        removeSubscriber(req.body.email);
+        addingSubscriber(req.body.email);
+        updateSubscriber(req.body.email);
       }
-
       res.json({ ok: true });
     } else {
       res.json({ err: "Updating was not successful" });
