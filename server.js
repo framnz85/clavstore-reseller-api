@@ -15,6 +15,7 @@ const allowedOrigins = [
   "https://learnclavstore.com",
   "https://www.learnclavstore.com",
   "http://localhost:3001",
+  "http://localhost:3004",
   "capacitor://localhost",
   "ionic://localhost",
   "http://localhost",
