@@ -1,6 +1,8 @@
-exports.addingSubscriber = (email) => {
+exports.addingSubscriber = (email, groupId) => {
   try {
-    const url = new URL("https://api.sender.net/v2/subscribers/groups/bYZ9nW");
+    const url = new URL(
+      `https://api.sender.net/v2/subscribers/groups/${groupId}`,
+    );
     const senderToken = process.env.SENDER_TOKEN;
 
     let headers = {
@@ -27,9 +29,16 @@ exports.addingSubscriber = (email) => {
   }
 };
 
-exports.removeSubscriber = (email) => {
+exports.addingSubscriberApi = (req, res) => {
+  const { email, groupId } = req.body;
+  exports.addingSubscriber(email, groupId);
+};
+
+exports.removeSubscriber = (email, groupId) => {
   try {
-    const url = new URL("https://api.sender.net/v2/subscribers/groups/e3VOn4");
+    const url = new URL(
+      `https://api.sender.net/v2/subscribers/groups/${groupId}`,
+    );
     const senderToken = process.env.SENDER_TOKEN;
 
     let headers = {
@@ -53,6 +62,11 @@ exports.removeSubscriber = (email) => {
   } catch (error) {
     console.error("Removing subscriber fails. " + error.message);
   }
+};
+
+exports.removeSubscriberApi = (req, res) => {
+  const { email, groupId } = req.body;
+  exports.removeSubscriber(email, groupId);
 };
 
 exports.updateSubscriber = (email) => {
@@ -83,4 +97,9 @@ exports.updateSubscriber = (email) => {
   } catch (error) {
     console.error("Updating subscriber fails. " + error.message);
   }
+};
+
+exports.updateSubscriberApi = (req, res) => {
+  const { email } = req.body;
+  exports.updateSubscriber(email);
 };

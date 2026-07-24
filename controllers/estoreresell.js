@@ -198,8 +198,8 @@ exports.approveCosmic = async (req, res) => {
     );
     if (estore) {
       if (estore.upStatus === "Active") {
-        removeSubscriber(req.body.email);
-        addingSubscriber(req.body.email);
+        removeSubscriber(req.body.email, "e3VOn4");
+        addingSubscriber(req.body.email, "bYZ9nW");
         updateSubscriber(req.body.email);
       }
       res.json({ ok: true });
