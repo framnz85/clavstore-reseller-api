@@ -65,6 +65,10 @@ exports.getEstores = async (req, res) => {
       .skip((currentPage - 1) * pageSize)
       .sort({ [sortkey]: sort })
       .limit(pageSize)
+      .populate({
+        path: "country",
+        select: "name",
+      })
       .exec();
 
     estores = [...estores, ...estoreResult];
