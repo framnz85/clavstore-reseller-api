@@ -41,19 +41,19 @@ exports.populateEstoreResell = async (estoreid, estores) => {
         (owner) =>
           estore._id &&
           owner.estoreid &&
-          owner.estoreid.toString() === estore._id.toString()
+          owner.estoreid.toString() === estore._id.toString(),
       ),
       upPackage: packageList.find(
         (pack) =>
           estore.upPackage &&
           pack._id &&
-          pack._id.toString() === estore.upPackage.toString()
+          pack._id.toString() === estore.upPackage.toString(),
       ),
       upPackage2: packageList2.find(
         (pack) =>
           estore.upPackage &&
           pack._id &&
-          pack._id.toString() === estore.upPackage.toString()
+          pack._id.toString() === estore.upPackage.toString(),
       ),
     };
   });
@@ -106,23 +106,23 @@ exports.populateBilling = async (billings, estoreid) => {
         (pack) =>
           bill.package &&
           pack._id &&
-          pack._id.toString() === bill.package.toString()
+          pack._id.toString() === bill.package.toString(),
       ),
       bank: paymentList.find(
         (pay) =>
-          bill.bank && pay._id && pay._id.toString() === bill.bank.toString()
+          bill.bank && pay._id && pay._id.toString() === bill.bank.toString(),
       ),
       estoreid: estoreList.find(
         (store) =>
           bill.estoreid &&
           store._id &&
-          store._id.toString() === bill.estoreid.toString()
+          store._id.toString() === bill.estoreid.toString(),
       ),
       userid: userList.find(
         (user) =>
           bill.userid &&
           user._id &&
-          user._id.toString() === bill.userid.toString()
+          user._id.toString() === bill.userid.toString(),
       ),
     };
   });
@@ -151,7 +151,7 @@ exports.populateUsers = async (users, estoreid) => {
         (estore) =>
           user.estoreid &&
           estore._id &&
-          estore._id.toString() === user.estoreid.toString()
+          estore._id.toString() === user.estoreid.toString(),
       ),
     };
   });

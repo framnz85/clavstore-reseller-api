@@ -5,11 +5,8 @@ const Estore = require("../models/estore");
 const User = require("../models/user");
 const UserResell = require("../models/userresell");
 
-const {
-  populateUsers,
-  populateWishlist,
-  populateAddress,
-} = require("./common");
+const { populateUsers } = require("./common");
+const { redisClient } = require("../config/redis");
 
 exports.getUserDetails = async (req, res) => {
   const email = req.user.email;
@@ -56,7 +53,7 @@ exports.getUserDetails = async (req, res) => {
           {
             email,
           },
-          { $set: { estoreid: new ObjectId(oldEstore._id) } }
+          { $set: { estoreid: new ObjectId(oldEstore._id) } },
         ).exec();
         userWithReseller = { ...userWithReseller, estoreid: oldEstore };
       }
@@ -147,10 +144,13 @@ exports.updateCustomer = async (req, res) => {
       req.body,
       {
         new: true,
-      }
+      },
     );
 
     res.json({ ok: true });
+
+    clearOneItemCache(estoreid, "users");
+    clearMultiItemsCache(estoreid, "users");
   } catch (error) {
     res.json({ err: "Updating user fails. " + error.message });
   }
@@ -170,9 +170,12 @@ exports.resetPassword = async (req, res) => {
       {
         password: md5("Grocery@2000"),
       },
-      { new: true }
+      { new: true },
     );
     res.json(user);
+
+    clearOneItemCache(estoreid, "users");
+    clearMultiItemsCache(estoreid, "users");
   } catch (error) {
     res.json({ err: "Reseting password for a user fails. " + error.message });
   }

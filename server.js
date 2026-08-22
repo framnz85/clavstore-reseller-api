@@ -6,6 +6,8 @@ require("dotenv").config();
 
 const app = express();
 
+const { connectRedis } = require("./config/redis");
+
 app.use(morgan("dev"));
 app.use(express.json({ limit: "2mb" }));
 
@@ -47,3 +49,19 @@ readdirSync("./routes").map((file) =>
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));
+
+const rport = process.env.REDIS_PORT || 8000;
+const startServer = async () => {
+  try {
+    await connectRedis();
+
+    app.listen(rport, () => {
+      console.log(`Server running on port ${rport}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
