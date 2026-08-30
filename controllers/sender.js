@@ -103,3 +103,39 @@ exports.updateSubscriberApi = (req, res) => {
   const { email } = req.body;
   exports.updateSubscriber(email);
 };
+
+exports.createSubscriber = (req, res) => {
+  const { email, name, mobile, preferredSchedule } = req.body;
+
+  try {
+    const url = new URL("https://api.sender.net/v2/subscribers");
+    const senderToken = process.env.SENDER_TOKEN;
+
+    let headers = {
+      Authorization: `Bearer ${senderToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    let bodyContent = {
+      email,
+      firstname: name,
+      phone: mobile,
+      groups: ["bkKEqX"],
+      fields: {
+        preferredSchedule,
+      },
+    };
+
+    fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(bodyContent),
+    })
+      .then((response) => response.json())
+      .then((data) => res.json(data))
+      .catch((error) => console.error("Error:", error));
+  } catch (error) {
+    console.error("Creating subscriber fails. " + error.message);
+  }
+};
