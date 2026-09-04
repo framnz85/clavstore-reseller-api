@@ -192,7 +192,14 @@ exports.updateEstore = async (req, res) => {
 
 exports.approveCosmic = async (req, res) => {
   const estoreid = req.headers.estoreid;
+  const countryid =
+    ObjectId.isValid(req.body.country) === req.body.country
+      ? req.body.country
+      : req.body.country._id
+        ? req.body.country._id
+        : null;
   try {
+    req.body.country = new ObjectId(countryid);
     const estore = await EstoreResell(estoreid).findByIdAndUpdate(
       req.body._id,
       req.body,
